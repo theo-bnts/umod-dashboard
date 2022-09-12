@@ -1,0 +1,35 @@
+.guild {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  background-color: #fff;
+  padding: 15px;
+  border: 1px solid #eee;
+  border-radius: 5px;
+  box-shadow: rgba(0, 0, 0, 0.06) 0px 2px 4px;
+  transition: all .3s ease-in-out;
+}
+
+.guild:hover {
+  box-shadow: rgba(0, 0, 0, 0.22) 0px 19px 43px;
+  transform: translate3d(0px, -1px, 0px);
+}
+
+.icon {
+  width: 20%;
+  border-radius: 50%;
+  background-color: #eee;
+  margin-right: 15px;
+}
+
+.informations {
+  display: flex;
+  flex-direction: column;
+  margin-left: 15px;
+  margin-right: 15px;
+}
+
+.configure_button {
+  margin-left: auto;
+}
