@@ -1,0 +1,7 @@
+.card_part {
+  max-width: min(30%, 128px);
+}
+
+.card_footer {
+  margin-left: auto;
+}

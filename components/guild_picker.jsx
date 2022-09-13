@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
-import { Text, Spinner } from '@fluentui/react'
+import { Subtitle1, Spinner } from '@fluentui/react-components'
+import { Card } from '@fluentui/react-components/unstable'
 
-import Guild from './guild'
-import styles from '../styles/components/Guilds.module.css'
+import Guild from '/components/guild_preview'
 
-export default function Guilds() {
+export default function GuildPicker() {
     const [loading, setLoading] = useState(true)
     const [guilds, setGuilds] = useState([])
 
@@ -18,8 +18,7 @@ export default function Guilds() {
     })
 
     return (
-        <div className={styles.guilds}>
-            <Text variant='xxLarge'>Your guilds</Text>
+        <Card>
             {
                 loading === false
                     ?
@@ -31,12 +30,12 @@ export default function Guilds() {
                                     )
                                 :
                                     <div className="no-guilds">
-                                        <Text>You are not a moderator on any guild</Text>
+                                        <Subtitle1>You are not a moderator on any guild</Subtitle1>
                                     </div>
                         )
                     :
                         <Spinner />
             }
-        </div>
+        </Card>
     )
 }
