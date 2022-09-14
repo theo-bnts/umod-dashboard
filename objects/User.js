@@ -44,7 +44,7 @@ class User {
             this.access_token = data.access_token
             this.expiration = new Date(new Date().getTime() + data.expires_in * 1000)
         } catch (error) {
-            throw 401
+            throw error.response.status
         }
 
         await Database.runQuery({
