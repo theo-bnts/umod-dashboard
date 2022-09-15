@@ -2,9 +2,10 @@ import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 
 import { Spinner } from '@fluentui/react-components'
-import axios from 'axios'
 
-import Page from '/objects/tools/Page'
+import API from '/tools/clientside/API'
+import Discord from '/tools/clientside/Discord'
+import Page from '/tools/clientside/Page'
 
 export default function Login() {
 
@@ -18,19 +19,7 @@ export default function Login() {
                 let data
 
                 try {
-                    const response = await axios({
-                        method: 'post',
-                        baseURL: '/',
-                        url: 'api/user/login',
-                        data: (
-                            new URLSearchParams({
-                                oauth_code: code
-                            })
-                                .toString()
-                        )
-                    })
-
-                    data = response.data.data
+                    data = await API.request('api/user/login', { oauth_code: code })
                 } catch (error) {
                     console.error(error)
                     return
@@ -38,19 +27,9 @@ export default function Login() {
 
                 Page.setKeys(data.id, data.encryption_key)
 
-                router.push('./')
-            } else {
-                const url = new URL('http://example.com')
-                url.protocol = 'https:'
-                url.host = 'discord.com'
-                url.pathname = '/api/oauth2/authorize'
-                url.searchParams.set('client_id', process.env.DISCORD_CLIENT_ID)
-                url.searchParams.set('redirect_uri', process.env.DISCORD_REDIRECT_URI)
-                url.searchParams.set('response_type', 'code')
-                url.searchParams.set('scope', 'identify guilds')
-
-                router.push(url.toString())
-            }
+                router.push('./guilds')
+            } else
+                router.push(Discord.getOAuthURL())
         })()
     }, [router])
 
@@ -62,7 +41,7 @@ export default function Login() {
 
 }
 
-export function getServerSideProps({ req, query }) {
+export function getServerSideProps({ query }) {
     return {
         props: {
             initQuery: query

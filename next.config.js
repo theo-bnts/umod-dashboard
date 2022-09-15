@@ -1,10 +1,13 @@
 /** @type {import('next').NextConfig} */
+
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
+
   images: {
-    domains: ['api.lorem.space'],
+    domains: ['cdn.discordapp.com'],
   },
+
   env: {
     DISCORD_API_BASE_URL: process.env.DISCORD_API_BASE_URL,
     DISCORD_CLIENT_ID: process.env.DISCORD_CLIENT_ID,

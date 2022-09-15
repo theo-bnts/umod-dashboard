@@ -1,20 +1,25 @@
 import { useState, useEffect } from 'react'
+
 import { Subtitle1, Spinner } from '@fluentui/react-components'
 import { Card } from '@fluentui/react-components/unstable'
 
 import Guild from '/components/guild_preview'
+import API from '/tools/clientside/API'
+import Page from '/tools/clientside/Page'
 
 export default function GuildPicker() {
     const [loading, setLoading] = useState(true)
     const [guilds, setGuilds] = useState([])
 
     useEffect(() => {
-        fetch('/api/user/guilds')
-            .then(result => result.json())
-            .then(data => {
-                setGuilds(data.data)
-                setLoading(false)
-            })
+        (async () => {
+            const keys = Page.getKeys()
+
+            const data = await API.request('api/user/guilds', keys)
+
+            setGuilds(data.guilds)
+            setLoading(false)
+        })()
     })
 
     return (
@@ -30,7 +35,7 @@ export default function GuildPicker() {
                                     )
                                 :
                                     <div className="no-guilds">
-                                        <Subtitle1>You are not a moderator on any guild</Subtitle1>
+                                        <Subtitle1>You are not a manager, administrator or owner of any guild</Subtitle1>
                                     </div>
                         )
                     :

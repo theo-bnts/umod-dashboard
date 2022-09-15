@@ -10,7 +10,6 @@ class API {
 
     static returnError(res, code) {
         let message
-
         switch (code) {
             case 400:
                 message = 'Bad request'
@@ -34,7 +33,7 @@ class API {
                 message = 'Unknown error'
                 break
         }
-
+        
         res
             .status(code)
             .json({

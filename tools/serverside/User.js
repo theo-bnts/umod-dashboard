@@ -1,7 +1,6 @@
-import axios from 'axios'
-
-import Crypto from '/objects/tools/Crypto'
-import Database from '/objects/tools/Database'
+import { API as DiscordAPI } from '/tools/serverside/Discord'
+import Crypto from '/tools/serverside/Crypto'
+import Database from '/tools/serverside/Database'
 
 class User {
     id
@@ -9,43 +8,31 @@ class User {
     access_token
     expiration
 
-    async create(...args) {
+    async from(...args) {
         if (args.length === 1)
-            await this.createFromOAuthCode(...args)
+            await this.fromOAuthCode(...args)
         else if (args.length === 2)
-            await this.createFromCredentials(...args)
+            await this.fromCredentials(...args)
     }
 
-    async createFromOAuthCode(oauth_code) {
+    async fromOAuthCode(oauth_code) {
         if (typeof oauth_code !== 'string' || oauth_code.length === 0)
             throw 400
 
         this.id = Crypto.generateKey()
         this.encryption_key = Crypto.generateKey()
 
-        try {
-            const { data } = await axios({
-                method: 'post',
-                baseURL: process.env.DISCORD_API_BASE_URL,
-                url: 'oauth2/token',
-                data: (
-                    new URLSearchParams({
-                        client_id: process.env.DISCORD_CLIENT_ID,
-                        client_secret: process.env.DISCORD_CLIENT_SECRET,
-                        redirect_uri: process.env.DISCORD_REDIRECT_URI,
-                        grant_type: 'authorization_code',
-                        scope: 'identify guilds',
-                        code: oauth_code
-                    })
-                    .toString()
-                )
-            })
+        const response = await DiscordAPI.request('oauth2/token', undefined, {
+            client_id: process.env.DISCORD_CLIENT_ID,
+            client_secret: process.env.DISCORD_CLIENT_SECRET,
+            redirect_uri: process.env.DISCORD_REDIRECT_URI,
+            grant_type: 'authorization_code',
+            scope: 'identify guilds',
+            code: oauth_code
+        })
 
-            this.access_token = data.access_token
-            this.expiration = new Date(new Date().getTime() + data.expires_in * 1000)
-        } catch (error) {
-            throw error.response.status
-        }
+        this.access_token = response.access_token
+        this.expiration = new Date(new Date().getTime() + response.expires_in * 1000)
 
         await Database.runQuery({
             sql: `
@@ -60,7 +47,7 @@ class User {
         })
     }
 
-    async createFromCredentials(id, encryption_key) {
+    async fromCredentials(id, encryption_key) {
         if (typeof id !== 'string' || id.length === 0 || typeof encryption_key !== 'string' || encryption_key.length === 0)
             throw 400
 

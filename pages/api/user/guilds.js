@@ -1,59 +1,21 @@
-import axios from 'axios'
-
-import API from '/objects/tools/API'
-import User from '/objects/User'
+import API from '/tools/serverside/API'
+import Discord, { API as DiscordAPI } from '/tools/serverside/Discord'
+import User from '/tools/serverside/User'
 
 class ExtendedUser extends User {
   async getGuilds() {
-    let data
+    const response = await DiscordAPI.request('users/@me/guilds', this.access_token)
 
-    try {
-
-      const response = await axios({
-        method: 'get',
-        baseURL: process.env.DISCORD_API_BASE_URL,
-        url: 'users/@me/guilds',
-        headers: {
-          Authorization: `Bearer ${this.access_token}`
-        }
-      })
-
-      data = response.data
-
-    } catch (error) {
-      throw error.response.status
-    }
-
-    const guilds = data.map(guild => {
-      let role = null
-
-      if (guild.owner)
-        role = {
-          name: 'owner',
-          display_name: 'Owner'
-        }
-      else if (guild.permissions & 0x00000008)
-        role = {
-          name: 'admin',
-          display_name: 'Administrator'
-        }
-      else if (guild.permissions & 0x00000020)
-        role = {
-          name: 'manager',
-          display_name: 'Manager'
-        }
-
-      return {
+    return response
+      .map(guild => ({
         id: guild.id,
         name: guild.name,
-        icon: 'https://cdn.discordapp.com/icons/' + guild.id + '/' + guild.icon + '.webp?size=128',
+        icon: 'https://cdn.discordapp.com/icons/' + guild.id + '/' + guild.icon + '.webp?size=512',
         user: {
-          role: role
+          role: Discord.getRole(guild.permissions, guild.owner)
         }
-      }
-    })
-
-    return guilds.filter(guild => guild.user.role !== null)
+      }))
+      .filter(guild => guild.user.role !== null)
   }
 }
 
@@ -63,7 +25,7 @@ export default async function handler(req, res) {
     const user = new ExtendedUser()
 
     try {
-      await user.create(req.body.id, req.body.encryption_key)
+      await user.from(req.body.id, req.body.encryption_key)
     } catch (code) {
       API.returnError(res, code)
       return

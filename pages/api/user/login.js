@@ -1,7 +1,5 @@
-//https://discord.com/api/oauth2/authorize?client_id=750297984645988472&redirect_uri=http://localhost:3000/dashboard/login&response_type=code&scope=identify%20guilds
-
-import API from '/objects/tools/API'
-import User from '/objects/User'
+import API from '/tools/serverside/API'
+import User from '/tools/serverside/User'
 
 class ExtendedUser extends User {
     getKeys() {
@@ -12,13 +10,13 @@ class ExtendedUser extends User {
     }
 }
 
-async function createUser(req) {
+async function getUser(req) {
     const user = new ExtendedUser()
 
     if (req.body.oauth_code)
-        await user.create(req.body.oauth_code)
+        await user.from(req.body.oauth_code)
     else
-        await user.create(req.body.id, req.body.encryption_key)
+        await user.from(req.body.id, req.body.encryption_key)
 
     return user
 }
@@ -29,7 +27,7 @@ export default async function handler(req, res) {
         let user
 
         try {
-            user = await createUser(req)
+            user = await getUser(req)
         } catch (code) {
             API.returnError(res, code)
             return
