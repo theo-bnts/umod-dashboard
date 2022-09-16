@@ -1,40 +1,25 @@
 import API from '/tools/serverside/API'
 import User from '/tools/serverside/User'
 
-class ExtendedUser extends User {
-    getKeys() {
-        return {
-            id: this.id,
-            encryption_key: this.encryption_key
-        }
-    }
-}
-
-async function getUser(req) {
-    const user = new ExtendedUser()
-
-    if (req.body.oauth_code)
-        await user.from(req.body.oauth_code)
-    else
-        await user.from(req.body.id, req.body.encryption_key)
-
-    return user
-}
-
 export default async function handler(req, res) {
 
-    if (req.method === 'POST') {
-        let user
+    if (!API.isValidRequest(req, res, true))
+        return
 
-        try {
-            user = await getUser(req)
-        } catch (code) {
-            API.returnError(res, code)
-            return
+    let { id, encryption_key, oauth_code } = req.body
+
+    try {
+        if (oauth_code) {
+            const keys = await User.createKeys(oauth_code)
+
+            id = keys.id
+            encryption_key = keys.encryption_key
         }
+    } catch (code) {
+        API.returnError(res, code)
+        return
+    }
 
-        API.returnSuccess(res, user.getKeys())
-    } else
-        API.returnError(res, 405)
+    API.returnSuccess(res, { id, encryption_key })
 
 }

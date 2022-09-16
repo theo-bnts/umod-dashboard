@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@fluentui/react-components": "^9.2.0",
+    "@fluentui/react-icons": "^2.0.182",
     "crypto-js": "^4.1.1",
     "js-cookie": "^3.0.1",
     "mysql2": "^2.3.3",

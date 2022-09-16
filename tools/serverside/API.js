@@ -1,3 +1,5 @@
+import User from '/tools/serverside/User'
+
 class API {
     static returnSuccess(res, data) {
         res
@@ -43,6 +45,29 @@ class API {
                     message: message
                 }
             })
+    }
+
+    static async isValidRequest(req, res, oauth_accepted = false) {
+        if (req.method !== 'POST') {
+            API.returnError(res, 405)
+            return false
+        }
+
+        const { id, encryption_key, oauth_code } = req.body
+
+        if (
+            !await User.isValidKeys(id, encryption_key)
+            && (
+                !oauth_accepted
+                || typeof oauth_code !== 'string'
+                || oauth_code.length !== 32
+            )
+        ) {
+            API.returnError(res, 401)
+            return false
+        }
+
+        return true
     }
 }
 

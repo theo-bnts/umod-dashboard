@@ -1,0 +1,11 @@
+.navbar {
+    padding: 10px 5vw;
+    display: flex;
+    align-items: center;
+}
+
+.titles {
+    margin-right: auto;
+    display: flex;
+    gap: 10px;
+}
