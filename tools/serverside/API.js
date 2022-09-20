@@ -60,7 +60,7 @@ class API {
             && (
                 !oauth_accepted
                 || typeof oauth_code !== 'string'
-                || oauth_code.length !== 32
+                || oauth_code.length !== 30
             )
         ) {
             API.returnError(res, 401)

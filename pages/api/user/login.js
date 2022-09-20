@@ -3,7 +3,7 @@ import User from '/tools/serverside/User'
 
 export default async function handler(req, res) {
 
-    if (!API.isValidRequest(req, res, true))
+    if (!await API.isValidRequest(req, res, true))
         return
 
     let { id, encryption_key, oauth_code } = req.body
