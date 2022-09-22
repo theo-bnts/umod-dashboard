@@ -1,21 +1,16 @@
-import Image from 'next/image'
 import Link from 'next/link'
-import { useState, useEffect } from 'react'
 
 import { Button, Subtitle1, Subtitle2 } from '@fluentui/react-components'
 import { Card, CardPreview, CardHeader, CardFooter } from '@fluentui/react-components/unstable'
 import { bundleIcon, SettingsRegular, SettingsFilled } from '@fluentui/react-icons'
 
 import Styles from '/styles/components/guild_preview.module.css'
+import Page from '/tools/clientside/Page'
 
 export default function GuildPreview({ id, icon, name, user_role }) {
+    const { width } = Page.useWindowDimensions()
+
     const SettingsIcon = bundleIcon(SettingsFilled, SettingsRegular)
-
-    const [width, setWidth] = useState(window.innerWidth)
-
-    useEffect(() => {
-        window.addEventListener('resize', () => setWidth(window.innerWidth))
-    })
 
     return (
         <Card orientation={width <= 768 ? 'vertical' : 'horizontal'}>
