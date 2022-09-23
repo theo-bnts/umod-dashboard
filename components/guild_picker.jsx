@@ -31,10 +31,10 @@ export default function GuildPicker() {
                             guilds.length > 0
                                 ?
                                     guilds.map(guild =>
-                                        <Guild key={guild.id} id={guild.id} icon={guild.icon} name={guild.name} user_role={guild.user.role.display_name} />
+                                        <Guild key={guild.id} id={guild.id} icon={guild.icon} name={guild.name} user_role={guild.user.role.display_name} bot_in={guild.bot.in} />
                                     )
                                 :
-                                    <div className="no-guilds">
+                                    <div className='no-guilds'>
                                         <Subtitle1>You are not a manager, administrator or owner of any guild</Subtitle1>
                                     </div>
                         )

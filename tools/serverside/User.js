@@ -1,4 +1,5 @@
 import Discord, { API as DiscordAPI } from '/tools/serverside/Discord'
+import Bot from '/tools/serverside/Bot'
 import Crypto from '/tools/serverside/Crypto'
 import Database from '/tools/serverside/Database'
 
@@ -19,7 +20,7 @@ class User {
         const id = Crypto.generateKey()
         const encryption_key = Crypto.generateKey()
 
-        await Database.runQuery({
+        await Database.Website.runQuery({
             sql: `
                 INSERT INTO credentials (user_id, encrypted_access_token, expiration)
                 VALUES (
@@ -52,7 +53,7 @@ class User {
         if (typeof id !== 'string' || id.length === 0 || typeof encryption_key !== 'string' || encryption_key.length === 0)
             throw 400
 
-        const rows = await Database.runQuery({
+        const rows = await Database.Website.runQuery({
             sql: `
                 SELECT encrypted_access_token
                 FROM credentials
@@ -86,19 +87,27 @@ class User {
     }
 
     static async getGuilds(id, encryption_key) {
-        const response = await DiscordAPI.get('users/@me/guilds', id, encryption_key)
-    
-        return response
-          .map(guild => ({
-            id: guild.id,
-            name: guild.name,
-            icon: 'https://cdn.discordapp.com/icons/' + guild.id + '/' + guild.icon + '.webp',
-            user: {
-              role: Discord.getRole(guild.permissions, guild.owner)
-            }
-          }))
-          .filter(guild => guild.user.role !== null)
-      }
+        const guilds = await DiscordAPI.get('users/@me/guilds', id, encryption_key)
+
+        for (const guild of guilds) {
+            guild.bot_in = await Bot.isInGuild(guild.id)
+        }
+
+        return guilds
+            .map(guild => ({
+                    id: guild.id,
+                    name: guild.name,
+                    icon: 'https://cdn.discordapp.com/icons/' + guild.id + '/' + guild.icon + '.webp',
+                    user: {
+                        role: Discord.getRole(guild.permissions, guild.owner)
+                    },
+                    bot: {
+                        in: guild.bot_in
+                    }
+            }))
+            .filter(guild => guild.user.role !== null)
+            .sort((a, b) => b.bot.in - a.bot.in || b.id - a.id)
+    }
 }
 
 export default User

@@ -5,6 +5,7 @@ import { bundleIcon, HomeRegular, HomeFilled, BotAddRegular, BotAddFilled } from
 
 import ProfilePreview from '/components/profile_preview.jsx'
 import Styles from '/styles/components/navbar.module.css'
+import Discord from '/tools/clientside/Discord'
 import Page from '/tools/clientside/Page'
 
 export default function GuildPicker() {
@@ -21,11 +22,9 @@ export default function GuildPicker() {
                         <Button icon={<HomeIcon />}>{width <= 768 ? null : 'Home'}</Button>
                     </a>
                 </Link>
-                <Link href='/invite'>
-                    <a>
-                        <Button icon={<BotAddIcon />}>{width <= 768 ? null : 'Add bot'}</Button>
-                    </a>
-                </Link>
+                <a href={Discord.getInviteURL()}>
+                    <Button icon={<BotAddIcon />}>{width <= 768 ? null : 'Add bot'}</Button>
+                </a>
             </div>
             <ProfilePreview />
         </div>

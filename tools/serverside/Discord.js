@@ -40,7 +40,7 @@ class API {
     }
 
     static async getFromCache(path, user_id, encryption_key) {
-        const rows = await Database.runQuery({
+        const rows = await Database.Website.runQuery({
             sql: `
                 SELECT encrypted_data
                 FROM discord_cache
@@ -93,7 +93,7 @@ class API {
         const stringified_data = JSON.stringify(data)
         const encrypted_data = Crypto.encryptData(stringified_data, encryption_key)
 
-        await Database.runQuery({
+        await Database.Website.runQuery({
             sql: `
                 INSERT INTO discord_cache
                 (path, user_id, encrypted_data)

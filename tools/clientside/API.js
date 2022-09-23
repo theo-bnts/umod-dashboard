@@ -1,3 +1,5 @@
+import Router from 'next/router'
+
 class API {
     static async request(path, data) {
         const response = await fetch('/' + path, {
@@ -8,8 +10,10 @@ class API {
             body: new URLSearchParams(data)
         })
 
-        if (!response.ok)
+        if (!response.ok) {
+            Router.push('/errors/' + response.status)
             throw response.status
+        }
 
         const json = await response.json()
 

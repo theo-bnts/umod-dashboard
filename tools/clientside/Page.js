@@ -1,3 +1,4 @@
+import Router from 'next/router'
 import { useState, useEffect } from 'react'
 
 import Cookies from 'js-cookie'
@@ -7,8 +8,10 @@ class Page {
         const id = Cookies.get('id')
         const encryption_key = Cookies.get('encryption_key')
 
-        if (typeof id !== 'string' || id.length === 0 || typeof encryption_key !== 'string' || encryption_key.length === 0)
-            throw 400
+        if (typeof id !== 'string' || id.length === 0 || typeof encryption_key !== 'string' || encryption_key.length === 0) {
+            Router.push('/errors/' + 401)
+            throw 401
+        }
 
         return {
             id,
@@ -17,8 +20,10 @@ class Page {
     }
 
     static setKeys(id, encryption_key) {
-        if (typeof id !== 'string' || id.length === 0 || typeof encryption_key !== 'string' || encryption_key.length === 0)
-            throw 400
+        if (typeof id !== 'string' || id.length === 0 || typeof encryption_key !== 'string' || encryption_key.length === 0) {
+            Router.push('/errors/' + 401)
+            throw 401
+        }
 
         Cookies.set('id', id)
         Cookies.set('encryption_key', encryption_key)
