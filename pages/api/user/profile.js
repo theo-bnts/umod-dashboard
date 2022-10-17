@@ -1,5 +1,5 @@
 import API from '/tools/serverside/API'
-import User from '/tools/serverside/User'
+import DiscordUser from '/tools/serverside/Discord/User'
 
 export default async function handler(req, res) {
 
@@ -11,7 +11,7 @@ export default async function handler(req, res) {
     let profile
 
     try {
-        profile = await User.getProfile(id, encryption_key)
+        profile = await DiscordUser.getProfile(id, encryption_key)
     } catch (code) {
         API.returnError(res, code)
         return

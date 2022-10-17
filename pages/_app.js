@@ -4,7 +4,7 @@ import '/styles/globals.css'
 
 function MyApp({ Component, pageProps }) {
   return (
-    <FluentProvider theme={webLightTheme}>
+    <FluentProvider theme={webDarkTheme}>
       <Component {...pageProps} />
     </FluentProvider>
   )
