@@ -2,7 +2,7 @@ import { LargeTitle } from '@fluentui/react-components'
 
 import GuildPicker from '/components/guild_picker'
 import Navbar from '/components/navbar'
-import Styles from '/styles/pages/dashboard/guilds/guilds.module.css'
+import Styles from '/styles/pages/dashboard/global.module.css'
 
 export default function Guilds() {
   return (

@@ -20,7 +20,7 @@ export default function GuildPicker() {
             setGuilds(data.guilds)
             setLoading(false)
         })()
-    })
+    }, [])
 
     return (
         <Card>

@@ -1,13 +1,17 @@
-html,
+:root {
+  --colorNeutralBackground1: #292929;
+}
+
 body {
   padding: 0;
   margin: 0;
-}
-
-a {
-  text-decoration: none;
+  background-color: var(--colorNeutralBackground1);
 }
 
 main {
   padding: 5vw;
+}
+
+a {
+  text-decoration: none;
 }

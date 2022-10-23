@@ -1,10 +1,8 @@
-import Image from 'next/image'
 import { useState, useEffect } from 'react'
 
-import { Subtitle1, Subtitle2, Spinner } from '@fluentui/react-components'
-import { Card, CardPreview, CardHeader, CardFooter } from '@fluentui/react-components/unstable'
+import { Avatar, Subtitle1, Subtitle2, Spinner } from '@fluentui/react-components'
+import { Card, CardHeader } from '@fluentui/react-components/unstable'
 
-import Styles from '/styles/components/profile_preview.module.css'
 import API from '/tools/clientside/API'
 import Page from '/tools/clientside/Page'
 
@@ -21,7 +19,7 @@ export default function ProfilePreview() {
             setProfile(data)
             setLoading(false)
         })()
-    })
+    }, [])
 
     return (
         <Card orientation='horizontal'>
@@ -29,15 +27,14 @@ export default function ProfilePreview() {
                 loading === false
                     ?
                         <>
-                            <CardPreview className={Styles.card_preview}>
-                                <img
-                                    className={Styles.icon}
-                                    src={profile.icon + '?size=32'}
-                                    alt={profile.username + '\'s icon'}
-                                    width='100%'
-                                    height='100%'
-                                />
-                            </CardPreview>
+                            <Avatar
+                                image={{
+                                    src: profile.icon + '?size=' + 32 * 2,
+                                    alt: profile.username + '\'s avatar'
+                                }}
+                                name={profile.username}
+                                size={32}
+                            />
                             <CardHeader
                                 header={<Subtitle1>{profile.username}</Subtitle1>}
                                 description={<Subtitle2>{'#' + profile.discriminator}</Subtitle2>}

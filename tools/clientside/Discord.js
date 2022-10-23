@@ -8,6 +8,7 @@ class Discord {
         url.searchParams.set('scope', 'identify guilds')
         url.searchParams.set('response_type', 'code')
         url.searchParams.set('redirect_uri', process.env.DISCORD_REDIRECT_URI)
+        url.searchParams.set('prompt', 'none')
 
         return url.toString()
     }
