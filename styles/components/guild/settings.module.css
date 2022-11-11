@@ -1,0 +1,10 @@
+.setting_header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.slider_values {
+    display: flex;
+    justify-content: space-between;
+    margin-top: -12px;
+}

@@ -2,7 +2,7 @@ import { useRouter } from 'next/router'
 
 import { LargeTitle } from '@fluentui/react-components'
 
-import GuildSettings from '/components/guild_settings'
+import GuildSettings from '/components/guild/settings/index'
 import Loading from '/components/loading'
 import Navbar from '/components/navbar'
 import Styles from '/styles/pages/dashboard/global.module.css'

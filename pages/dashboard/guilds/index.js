@@ -1,6 +1,6 @@
 import { LargeTitle } from '@fluentui/react-components'
 
-import GuildPicker from '/components/guild_picker'
+import GuildPicker from '/components/guild/picker'
 import Navbar from '/components/navbar'
 import Styles from '/styles/pages/dashboard/global.module.css'
 

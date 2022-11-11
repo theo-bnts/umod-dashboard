@@ -4,7 +4,7 @@ import { Button, Subtitle1, Subtitle2 } from '@fluentui/react-components'
 import { Card, CardPreview, CardHeader, CardFooter } from '@fluentui/react-components/unstable'
 import { bundleIcon, BotAddFilled, BotAddRegular, SettingsRegular, SettingsFilled } from '@fluentui/react-icons'
 
-import Styles from '/styles/components/guild_preview.module.css'
+import Styles from '/styles/components/guild/preview.module.css'
 import Discord from '/tools/clientside/Discord'
 import Page from '/tools/clientside/Page'
 

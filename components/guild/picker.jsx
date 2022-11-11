@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { Subtitle1, Spinner } from '@fluentui/react-components'
 import { Card } from '@fluentui/react-components/unstable'
 
-import Guild from '/components/guild_preview'
+import Guild from '/components/guild/preview'
 import API from '/tools/clientside/API'
 import Page from '/tools/clientside/Page'
 

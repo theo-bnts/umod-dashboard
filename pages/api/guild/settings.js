@@ -1,6 +1,6 @@
 import API from '/tools/serverside/API'
-import DiscordGuild from '/tools/serverside/Discord/Guild'
 import DiscordUser from '/tools/serverside/Discord/User'
+import { Settings as GuildSettings } from '/tools/serverside/Guild'
 
 export default async function handler(req, res) {
 
@@ -13,8 +13,9 @@ export default async function handler(req, res) {
 
     try {
 
+        // WARNING: DiscordUser.canManageGuild not terminated
         if (await DiscordUser.canManageGuild(guild_id, id, encryption_key))
-            settings = await DiscordGuild.getSettings(guild_id, id, encryption_key)
+            settings = await GuildSettings.get(guild_id)
         else
             throw 403
 
