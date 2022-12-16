@@ -146,7 +146,12 @@ class Settings {
     static async logs({ logs_channel: logs_channel_id }, guild_id) {
         const channels = await Guild.getChannels(guild_id)
 
-        const logsChannel = channels.find(({id}) => id === logs_channel_id) || { id: logs_channel_id, display: 'Unknown (' + id + ')' }
+        let logsChannel = null
+        
+        if (logs_channel_id)
+            logsChannel = channels.find(({ id }) => id === logs_channel_id) || { id: logs_channel_id, display: 'Unknown (' + id + ')' }
+        else
+            logsChannel = { id: null, display: 'Not set' }
 
         return {
             display: 'Logs',
@@ -155,7 +160,7 @@ class Settings {
                 [logsChannel],
                 channels,
                 false,
-                '^[0-9]{18}$'
+                '^[0-9]{18,19}$'
             )
         }
     }
@@ -163,7 +168,12 @@ class Settings {
     static async moderation({ moderator_role: moderation_role_id }, guild_id) {
         const roles = await Guild.getRoles(guild_id)
 
-        const moderatorRole = roles.find(({id}) => id === moderation_role_id) || { id: moderation_role_id, display: 'Unknown (' + id + ')' }
+        let moderatorRole = null
+
+        if (moderation_role_id)
+            roles.find(({id}) => id === moderation_role_id) || { id: moderation_role_id, display: 'Unknown (' + id + ')' }
+        else
+            moderatorRole = { id: null, display: 'Not set' }
 
         return {
             display: 'Moderation team',
@@ -172,7 +182,7 @@ class Settings {
                 [moderatorRole],
                 roles,
                 false,
-                '^[0-9]{18}$'
+                '^[0-9]{18,19}$'
             )
         }
     }

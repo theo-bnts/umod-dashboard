@@ -75,7 +75,7 @@ class API {
                 ]
             })
 
-            if (user_ids_count_except_current >= 5)
+            if (user_ids_count_except_current + 1 > 5)
                 status = 429
         }
         
