@@ -29,6 +29,9 @@ class API {
             case 405:
                 message = 'Method not allowed'
                 break
+            case 429:
+                message = 'Too many requests'
+                break
             case 500:
                 message = 'Internal server error'
                 break
@@ -62,7 +65,7 @@ class API {
                     SELECT COUNT(DISTINCT(user_id)) AS 'user_ids_count_except_current'
                     FROM requests
                     WHERE ip = ?
-                    AND validity_status = 200
+                    AND validity_status != 429
                     AND user_id != ?
                     AND date >= SUBDATE(NOW(), INTERVAL 1 HOUR)
                 `,
@@ -81,8 +84,8 @@ class API {
                 sql: `
                     SELECT COUNT(*) AS 'endpoint_requests_count_except_current'
                     FROM requests
-                    WHERE validity_status = 200
-                    AND endpoint = ?
+                    WHERE validity_status != 429
+                    AND endpoint_path = ?
                     AND (
                         ip = ?
                         OR (user_id IS NOT NULL AND user_id = ?)
@@ -96,11 +99,17 @@ class API {
                 ]
             })
 
-            // TODO : Different limits by endpoint
-            if (endpoint_requests_count_except_current >= 30)
-                status = 429
+            const [{ allowed_requests_per_hour }] = await Database.Website.runQuery({
+                sql: `
+                    SELECT allowed_requests_per_hour
+                    FROM reference_endpoints
+                    WHERE path = ?
+                `,
+                values: [url.pathname]
+            })
 
-            console.debug('endpoint_requests_count_except_current', endpoint_requests_count_except_current)
+            if (endpoint_requests_count_except_current + 1 > allowed_requests_per_hour)
+                status = 429
         }
 
         if (status === 200) {
@@ -119,7 +128,7 @@ class API {
 
         await Database.Website.runQuery({
             sql: `
-                INSERT INTO requests (endpoint, ip, user_id, validity_status)
+                INSERT INTO requests (endpoint_path, ip, user_id, validity_status)
                 VALUES (?, ?, ?, ?)
             `,
             values: [
