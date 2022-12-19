@@ -101,9 +101,17 @@ class API {
 
             const [{ allowed_requests_per_hour }] = await Database.Website.runQuery({
                 sql: `
-                    SELECT allowed_requests_per_hour
+                    SELECT
+                        IFNULL(
+                            (
+                                SELECT allowed_requests_per_hour
+                                FROM reference_endpoints
+                                WHERE path = ?
+                            ),
+                            0
+                        ) AS 'allowed_requests_per_hour'
                     FROM reference_endpoints
-                    WHERE path = ?
+                    LIMIT 1;
                 `,
                 values: [url.pathname]
             })

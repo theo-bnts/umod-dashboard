@@ -1,35 +1,41 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 import { Subtitle1, Switch } from '@fluentui/react-components'
 import { Card } from '@fluentui/react-components/unstable'
-import { isEqual } from 'lodash'
+import { isEqual, cloneDeep } from 'lodash'
 
 import GuildSettingInteger from '/components/guild/settings/integer'
 import GuildSettingString from '/components/guild/settings/string'
 import GuildSettingArray from '/components/guild/settings/array'
 import Styles from '/styles/components/guild/settings.module.css'
+import API from '/tools/clientside/API'
+import Page from '/tools/clientside/Page'
 
-export default function GuildSettingsModule({ name, defaultValues }) {
-    const [backValues, setBackValues] = useState(defaultValues)
-    const [frontValues, setFrontValues] = useState(defaultValues)
+export default function GuildSettingsModule({ guildId, moduleName, defaultValues }) {
+    const [backValues, setBackValues] = useState(cloneDeep(defaultValues))
+    const [frontValues, setFrontValues] = useState(cloneDeep(defaultValues))
 
-    const [precedentTimeoutId, setPrecedentTimeoutId] = useState(null)
+    let precedentTimeoutId = useRef(null)
 
     useEffect(() => {
-        clearTimeout(precedentTimeoutId)
+        clearTimeout(precedentTimeoutId.current)
+        
+        precedentTimeoutId.current = setTimeout(async () => {
+            if (!isEqual(frontValues, backValues)) {
+                const { id, encryption_key } = Page.getKeys()
 
-        setPrecedentTimeoutId(
-            setTimeout(() => {
-                console.log('frontValues', frontValues)
-                console.log('backValues', backValues)
+                await API.request('api/guild/settings/update', {
+                    id,
+                    encryption_key,
+                    guild_id: guildId,
+                    type: moduleName,
+                    object: JSON.stringify(frontValues)
+                })
 
-                if (!isEqual(frontValues, backValues)) {
-                    console.log('Calling API ..')
-                    //setBackValues(frontValues)
-                }
-            }, 3 * 1000)
-        )
-    }, [frontValues, backValues, precedentTimeoutId])
+                setBackValues(cloneDeep(frontValues))
+            }
+        }, 3 * 1000)
+    }, [frontValues, backValues])
 
     return (
         <Card>
@@ -61,6 +67,7 @@ export default function GuildSettingsModule({ name, defaultValues }) {
                                     case 'integer':
                                         return (
                                             <GuildSettingInteger
+                                                key={settingName}
                                                 moduleName={name}
                                                 moduleData={frontValues}
                                                 setModuleData={setFrontValues}
@@ -70,6 +77,7 @@ export default function GuildSettingsModule({ name, defaultValues }) {
                                     case 'string':
                                         return (
                                             <GuildSettingString
+                                                key={settingName}
                                                 moduleName={name}
                                                 moduleData={frontValues}
                                                 setModuleData={setFrontValues}
@@ -79,6 +87,7 @@ export default function GuildSettingsModule({ name, defaultValues }) {
                                     case 'array':
                                         return (
                                             <GuildSettingArray
+                                                key={settingName}
                                                 moduleName={name}
                                                 moduleData={frontValues}
                                                 setModuleData={setFrontValues}

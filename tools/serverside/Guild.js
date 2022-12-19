@@ -29,14 +29,17 @@ class SettingsTypes {
     }
 
     static array(display, value, available, multiselect, regex) {
-        function formatArray(array) {
+        function formatArray(array, mode) {
             if (array === null)
                 array = []
 
             if (typeof array === 'string')
                 array = array.split(',')
+
+            if (!Array.isArray(array))
+                array = [array]
             
-            if (typeof array.at(0) !== 'object')
+            if (typeof array.at(0) !== 'object' && mode === 'available')
                 array = array.map(subValue => ({ id: subValue, display: subValue }))
 
             return array
@@ -44,8 +47,8 @@ class SettingsTypes {
 
         return {
             type: 'array',
-            value: formatArray(value),
-            available: available !== null ? formatArray(available) : undefined,
+            value: formatArray(value, 'selected'),
+            available: formatArray(available, 'available'),
             multiselect,
             regex,
             display
@@ -88,10 +91,12 @@ class Settings {
         }
     }
 
-    static validate(type, object) {
+    static async validate(type, object) {
         try {
-            const requiredStructure = Guild[type]()
-            const requiredAttributes = Object.entries(requiredStructure.options)
+            const defaultSettings = {}
+
+            const requiredStructure = await Settings[type](defaultSettings)
+            const requiredAttributes = Object.entries(requiredStructure)
 
             const returnedAttributes = Object.entries(object)
 
@@ -99,65 +104,116 @@ class Settings {
                 return false
             }
 
-            for (const [requiredKey, requiredValue] of requiredAttributes) {
+            for (const [requiredKey, requiredValueMeta] of requiredAttributes) {
+                const { value: requiredValue } = requiredValueMeta
+
                 if (!returnedAttributes.some(([returnedKey, returnedValue]) => returnedKey === requiredKey)) {
                     return false
                 }
 
-                const [returnedKey, returnedValue] = returnedAttributes.find(([returnedKey, returnedValue]) => returnedKey === requiredKey)
+                const [returnedKey, returnedValueMeta] = returnedAttributes.find(([returnedKey, returnedValue]) => returnedKey === requiredKey)
+                const { value: returnedValue } = returnedValueMeta
 
-                if (typeof returnedValue !== requiredValue.type) {
-                    return false
-                }
+                const isVariable = ['boolean', 'integer', 'string', 'array']
+                    .includes(requiredValueMeta.type)
 
-                if (requiredValue.type === 'integer') {
-                    if (returnedValue < requiredValue.min || returnedValue > requiredValue.max) {
+                if (isVariable) {
+                    if (requiredValueMeta.type === 'boolean') {
+                        if (typeof returnedValue !== 'boolean') {
+                            return false
+                        }
+                    }
+
+                    if (requiredValueMeta.type === 'integer') {
+                        if (typeof returnedValue !== 'number') {
+                            return false
+                        }
+                            
+                        if (returnedValue < requiredValueMeta.min || returnedValue > requiredValueMeta.max) {
+                            return false
+                        }
+                    }
+
+                    if (requiredValueMeta.type === 'string') {
+                        if (requiredValueMeta.type !== 'string') {
+                            return false
+                        }
+
+                        if (new RegExp(requiredValueMeta.regex).test(returnedValue) === false) {
+                            return false
+                        }
+                    }
+                    
+                    if (requiredValueMeta.type === 'array') {
+                        if (!Array.isArray(returnedValue)) {
+                            return false
+                        }
+
+                        if (returnedValue.some((value, index) => returnedValue.indexOf(value) !== index)) {
+                            return false
+                        }
+
+                        if (returnedValue.some(value => typeof value !== 'string')) {
+                            return false
+                        }
+
+                        if (returnedValue.some(value => new RegExp(requiredValueMeta.regex).test(value) === false)) {
+                            return false
+                        }
+                    }
+                } else {
+                    if (returnedValue !== requiredValue) {
                         return false
                     }
                 }
-
-                if (requiredValue.type === 'string') {
-                    if (returnedValue.test(requiredValue.regex) === false) {
-                        return false
-                    }
-                }
-
-                if (requiredValue.type === 'array') {
-                    if (returnedValue.some((value, index) => returnedValue.indexOf(value) !== index)) {
-                        return false
-                    }
-
-                    if (returnedValue.some(value => typeof value !== 'string')) {
-                        return false
-                    }
-
-                    if (returnedValue.some(value => value.test(requiredValue.regex) === false)) {
-                        return false
-                    }
-                }
-
-                return true
             }
+
+            return true
         } catch (error) {
+            console.error('Guild', 3901, error)
+
             return false
         }
     }
 
-    static async logs({ logs_channel: logs_channel_id }, guild_id) {
-        const channels = await Guild.getChannels(guild_id)
+    static async update(guild_id, type, object) {
+        if (!await Settings.validate(type, object))
+            throw 400
 
-        let logsChannel = null
-        
-        if (logs_channel_id)
-            logsChannel = channels.find(({ id }) => id === logs_channel_id) || { id: logs_channel_id, display: 'Unknown (' + id + ')' }
-        else
-            logsChannel = { id: null, display: 'Not set' }
+        const attributes = Object.entries(object)
+
+        for (const [attributeKey, attribute] of attributes) {
+            const isVariable = ['boolean', 'integer', 'string', 'array']
+                .includes(attribute.type)
+
+            if (isVariable) {
+                const value = attribute.type === 'array' ? attribute.value.join(',') : attribute.value
+
+                const databaseColumn = Settings.getDatabaseColumnName(type + '_' + attributeKey)
+
+                await Database.Bot.runQuery({
+                    sql: `
+                        UPDATE guilds
+                        SET ${databaseColumn} = ?
+                        WHERE id = ?
+                    `,
+                    values: [
+                        value,
+                        guild_id
+                    ]
+                })
+            }
+        }
+    }
+
+    static async logs({ logs_channel: logs_channel_id }, guild_id) {
+        const channels = guild_id !== undefined ? await Guild.getChannels(guild_id) : []
 
         return {
             display: 'Logs',
-            channel: SettingsTypes.array(
+            channel_id: SettingsTypes.array(
                 'Channel',
-                [logsChannel],
+                logs_channel_id,
                 channels,
                 false,
                 '^[0-9]{18,19}$'
@@ -166,20 +222,13 @@ class Settings {
     }
 
     static async moderation({ moderator_role: moderation_role_id }, guild_id) {
-        const roles = await Guild.getRoles(guild_id)
-
-        let moderatorRole = null
-
-        if (moderation_role_id)
-            roles.find(({id}) => id === moderation_role_id) || { id: moderation_role_id, display: 'Unknown (' + id + ')' }
-        else
-            moderatorRole = { id: null, display: 'Not set' }
+        const roles = guild_id !== undefined ? await Guild.getRoles(guild_id) : []
 
         return {
             display: 'Moderation team',
-            role: SettingsTypes.array(
+            role_id: SettingsTypes.array(
                 'Moderator role',
-                [moderatorRole],
+                moderation_role_id,
                 roles,
                 false,
                 '^[0-9]{18,19}$'
@@ -187,25 +236,25 @@ class Settings {
         }
     }
 
-    static timeout({ timeout: enabled, timeout_seconds }) {
+    static timeout({ timeout: timeout_enabled, timeout_seconds }) {
         return {
             display: 'Timeout on infractions',
-            enabled: SettingsTypes.boolean(enabled),
+            enabled: SettingsTypes.boolean(timeout_enabled),
             seconds: SettingsTypes.integer('Duration (seconds)', timeout_seconds, 10, 300)
         }
     }
     
-    static raid({ raid_protection: enabled }) {
+    static raid({ raid_protection: raid_enabled }) {
         return {
             display: 'Raid protection',
-            enabled: SettingsTypes.boolean(enabled),
+            enabled: SettingsTypes.boolean(raid_enabled),
         }
     }
 
-    static duplicated({ duplicated_moderation: enabled }) {
+    static duplicated({ duplicated_moderation: duplicated_enabled }) {
         return {
             display: 'Duplicated messages',
-            enabled: SettingsTypes.boolean(enabled),
+            enabled: SettingsTypes.boolean(duplicated_enabled),
         }
     }
 
@@ -357,6 +406,106 @@ class Settings {
                 'API key (Tutorial: https://cutt.ly/kMsE1OC)',
                 virus_api_key,
                 '^[a-f0-9]{32}$')
+        }
+    }
+
+
+    static getDatabaseColumnName(codeName) {
+        switch (codeName) {
+            case 'logs_channel_id':
+                return 'logs_channel'
+            case 'moderation_role_id':
+                return 'moderator_role'
+            case 'timeout_enabled':
+                return 'timeout'
+            case 'timeout_seconds':
+                return 'timeout_seconds'
+            case 'raid_enabled':
+                return 'raid_protection'
+            case 'duplicated_enabled':
+                return 'duplicated_moderation'
+            case 'spam_enabled':
+                return 'spam_moderation'
+            case 'uppercase_enabled':
+                return 'uppercase_moderation'
+            case 'uppercase_minimum_length':
+                return 'uppercase_minimum_length'
+            case 'uppercase_minimum_percent':
+                return 'uppercase_minimum_percent'
+            case 'bold_enabled':
+                return 'bold_moderation'
+            case 'bold_minimum_length':
+                return 'bold_minimum_length'
+            case 'bold_minimum_percent':
+                return 'bold_minimum_percent'
+            case 'underline_enabled':
+                return 'underline_moderation'
+            case 'underline_minimum_length':
+                return 'underline_minimum_length'
+            case 'underline_minimum_percent':
+                return 'underline_minimum_percent'
+            case 'strikethrough_enabled':
+                return 'strikethrough_moderation'
+            case 'strikethrough_minimum_length':
+                return 'strikethrough_minimum_length'
+            case 'strikethrough_minimum_percent':
+                return 'strikethrough_minimum_percent'
+            case 'spoiler_enabled':
+                return 'spoilers_moderation'
+            case 'spoiler_minimum_length':
+                return 'spoilers_minimum_length'
+            case 'spoiler_minimum_percent':
+                return 'spoilers_minimum_percent'
+            case 'code_enabled':
+                return 'code_moderation'
+            case 'code_minimum_length':
+                return 'code_minimum_length'
+            case 'code_minimum_percent':
+                return 'code_minimum_percent'
+            case 'blank_line_enabled':
+                return 'blank_lines_moderation'
+            case 'blank_line_minimum_length':
+                return 'blank_lines_minimum_length'
+            case 'blank_line_minimum_percent':
+                return 'blank_lines_minimum_percent'
+            case 'zalgo_enabled':
+                return 'zalgo_moderation'
+            case 'zalgo_minimum_length':
+                return 'zalgo_minimum_length'
+            case 'zalgo_minimum_percent':
+                return 'zalgo_minimum_percent'
+            case 'emoji_enabled':
+                return 'emoji_moderation'
+            case 'emoji_minimum_count':
+                return 'emoji_moderation_count'
+            case 'mention_enabled':
+                return 'mentions_moderation'
+            case 'mention_minimum_count':
+                return 'mentions_moderation_count'
+            case 'text_enabled':
+                return 'text_moderation'
+            case 'text_minimum_percent':
+                return 'text_moderation_percent'
+            case 'link_enabled':
+                return 'links_moderation'
+            case 'link_authorized_domains':
+                return 'authorized_domains'
+            case 'link_blocked_domains':
+                return 'blocked_domains'
+            case 'image_enabled':
+                return 'image_moderation'
+            case 'image_api_key':
+                return 'clarifai_api_key'
+            case 'image_attributes':
+                return 'image_moderation_attributes'
+            case 'image_minimum_percent':
+                return 'image_moderation_percent'
+            case 'virus_enabled':
+                return 'virus_moderation'
+            case 'virus_api_key':
+                return 'metadefender_api_key'
+            default:
+                return 'UNKNOWN_COLUMN'
         }
     }
 }

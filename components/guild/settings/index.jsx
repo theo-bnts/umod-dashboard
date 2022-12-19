@@ -15,7 +15,7 @@ export default function GuildSettings({ guild_id }) {
         (async () => {
             const { id, encryption_key } = Page.getKeys()
 
-            const data = await API.request('api/guild/settings', {
+            const data = await API.request('api/guild/settings/get', {
                 id,
                 encryption_key,
                 guild_id
@@ -38,7 +38,8 @@ export default function GuildSettings({ guild_id }) {
                                 return (
                                     <GuildSettingsModule
                                         key={moduleName}
-                                        name={moduleName}
+                                        guildId={guild_id}
+                                        moduleName={moduleName}
                                         defaultValues={moduleData}
                                     />
                                 )

@@ -9,14 +9,11 @@ export default function GuildSettingArray({ moduleName, moduleData, setModuleDat
             <Label htmlFor={moduleName + '_' + settingName}>{moduleData[settingName].display}</Label>
             <Dropdown
                 id={moduleName + '_' + settingName}
-                selectedOptions={settingData.value.map(({id}) => id)}
+                selectedOptions={settingData.value}
                 multiselect={settingData.multiselect}
                 onOptionSelect={(event, data) => {
                     settingData.value = data.selectedOptions.map(display => {
-                        return {
-                            id: settingData.available?.find(subValue => subValue.display === display).id || display,
-                            display
-                        }
+                        return settingData.available?.find(subValue => subValue.display === display).id || display
                     })
 
                     const copy = { ...moduleData }

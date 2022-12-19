@@ -18,6 +18,7 @@ export default function Login() {
             if (typeof code === 'string' && code.length > 0) {
                 let data
 
+                // TODO: rm try - catch ?
                 try {
                     data = await API.request('api/user/login', { oauth_code: code })
                 } catch (error) {
