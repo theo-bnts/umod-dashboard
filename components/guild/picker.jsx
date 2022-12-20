@@ -17,7 +17,7 @@ export default function GuildPicker() {
 
             const data = await API.request('api/user/guilds', keys)
 
-            setGuilds(data.guilds)
+            setGuilds(data.guilds.filter(guild => guild.user.role.can_manage_guild === true))
             setLoading(false)
         })()
     }, [])

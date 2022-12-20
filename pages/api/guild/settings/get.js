@@ -12,8 +12,6 @@ export default async function handler(req, res) {
 
     try {
 
-        // TODO
-        // WARNING: DiscordUser.canManageGuild not terminated
         if (await DiscordUser.canManageGuild(guild_id, id, encryption_key)) {
             settings = await GuildSettings.get(guild_id)
         } else

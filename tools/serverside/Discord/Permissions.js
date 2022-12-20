@@ -12,15 +12,13 @@ class Permissions {
                 display_name: 'Owner',
                 can_manage_guild: true
             }
-
-        if (bit_field & 0x00000008)
+        else if (bit_field & 0x00000008)
             title = {
                 name: 'admin',
                 display_name: 'Administrator',
                 can_manage_guild: true
             }
-
-        if (bit_field & 0x00000020)
+        else if (bit_field & 0x00000020)
             title = {
                 name: 'manager',
                 display_name: 'Manager',

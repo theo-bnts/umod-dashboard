@@ -80,7 +80,7 @@ class Settings {
             strikethrough: Settings.strikethrough(rawSettings),
             spoiler: Settings.spoiler(rawSettings),
             code: Settings.code(rawSettings),
-            blank_line: Settings.blankLine(rawSettings),
+            blank_line: Settings.blank_line(rawSettings),
             zalgo: Settings.zalgo(rawSettings),
             emoji: Settings.emoji(rawSettings),
             mention: Settings.mention(rawSettings),
@@ -319,7 +319,7 @@ class Settings {
         }
     }
 
-    static blankLine({ blank_lines_moderation: blank_line_enabled, blank_lines_minimum_length: blank_line_minimum_length, blank_lines_minimum_percent: blank_line_minimum_percent }) {
+    static blank_line({ blank_lines_moderation: blank_line_enabled, blank_lines_minimum_length: blank_line_minimum_length, blank_lines_minimum_percent: blank_line_minimum_percent }) {
         return {
             display: 'Blank lines',
             enabled: SettingsTypes.boolean(blank_line_enabled),

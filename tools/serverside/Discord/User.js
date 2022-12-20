@@ -33,14 +33,13 @@ class User {
                         in: guild.bot_in
                     }
             }))
-            .filter(guild => guild.user.role.can_manage_guild === true)
             .sort((a, b) => b.bot.in - a.bot.in || b.id - a.id)
     }
 
     static async canManageGuild(guild_id, id, encryption_key) {
         const guilds = await User.getGuilds(id, encryption_key)
 
-        return guilds.some(guild => guild.id === guild_id) && guilds.find(guild => guild.id === guild_id).bot.in
+        return guilds.find(guild => guild.id === guild_id && guild.user.role.can_manage_guild === true)?.bot.in === true
     }
 }
 
