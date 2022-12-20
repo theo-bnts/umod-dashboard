@@ -1,5 +1,6 @@
-import User from '/tools/serverside/User'
+import Page from '/tools/clientside/Page'
 import Database from '/tools/serverside/Database'
+import User from '/tools/serverside/User'
 
 class API {
     static returnSuccess(res, data) {
@@ -12,33 +13,7 @@ class API {
     }
 
     static returnError(res, code) {
-        let message
-        switch (code) {
-            case 400:
-                message = 'Bad request'
-                break
-            case 401:
-                message = 'Unauthorized'
-                break
-            case 403:
-                message = 'Forbidden'
-                break
-            case 404:
-                message = 'Not found'
-                break
-            case 405:
-                message = 'Method not allowed'
-                break
-            case 429:
-                message = 'Too many requests'
-                break
-            case 500:
-                message = 'Internal server error'
-                break
-            default:
-                message = 'Unknown error'
-                break
-        }
+        const message = Page.getErrorMessage(code)
         
         res
             .status(code)

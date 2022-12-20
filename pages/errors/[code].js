@@ -1,8 +1,19 @@
 import Error from 'next/error'
 import { useRouter } from 'next/router'
 
-export default function Guild() {
-    const { code } = useRouter().query
+import Page from '/tools/clientside/Page'
 
-    return <Error statusCode={code} />
+export default function Guild() {
+    const router = useRouter()
+
+    const code = router.query.code
+
+    setTimeout(() => {
+        router.push('/dashboard/login')
+    }, 5000)
+
+    return <Error
+        statusCode={code}
+        title={Page.getErrorMessage(code)}
+    />
 }

@@ -15,6 +15,8 @@ export default function GuildSettingsModule({ guildId, moduleName, defaultValues
     const [backValues, setBackValues] = useState(cloneDeep(defaultValues))
     const [frontValues, setFrontValues] = useState(cloneDeep(defaultValues))
 
+    const [displaySavedNotification, setDisplaySavedNotification] = useState(false)
+
     let precedentTimeoutId = useRef(null)
 
     useEffect(() => {
@@ -33,72 +35,87 @@ export default function GuildSettingsModule({ guildId, moduleName, defaultValues
                 })
 
                 setBackValues(cloneDeep(frontValues))
+
+                setDisplaySavedNotification(true)
+                setTimeout(() => {
+                    setDisplaySavedNotification(false)
+                }, 3 * 1000)
             }
         }, 3 * 1000)
-    }, [frontValues, backValues])
+    }, [frontValues, backValues, guildId, moduleName])
 
     return (
-        <Card>
-            <div className={Styles.setting_header}>
-                <Subtitle1>{frontValues.display}</Subtitle1>
+        <>
+            <Card>
+                <div className={Styles.setting_header}>
+                    <Subtitle1>{frontValues.display}</Subtitle1>
+                    {
+                        frontValues.enabled !== undefined
+                            ?
+                                <Switch
+                                    checked={frontValues.enabled.value}
+                                    onChange={(event, data) => {
+                                        const copy = { ...frontValues }
+                                        copy.enabled.value = data.checked
+                                        setFrontValues(copy)
+                                    }}
+                                />
+                            :
+                                null
+                    }
+                </div>
+
                 {
-                    frontValues.enabled !== undefined
+                    frontValues.enabled === undefined || frontValues.enabled.value === true
                         ?
-                            <Switch
-                                checked={frontValues.enabled.value}
-                                onChange={(event, data) => {
-                                    const copy = { ...frontValues }
-                                    copy.enabled.value = data.checked
-                                    setFrontValues(copy)
-                                }}
-                            />
+                            Object.entries(frontValues)
+                                .filter(([settingName, settingData]) => settingName !== 'enabled')
+                                .map(([settingName, settingData]) => {
+                                    switch (settingData.type) {
+                                        case 'integer':
+                                            return (
+                                                <GuildSettingInteger
+                                                    key={settingName}
+                                                    moduleName={name}
+                                                    moduleData={frontValues}
+                                                    setModuleData={setFrontValues}
+                                                    settingName={settingName}
+                                                />
+                                            )
+                                        case 'string':
+                                            return (
+                                                <GuildSettingString
+                                                    key={settingName}
+                                                    moduleName={name}
+                                                    moduleData={frontValues}
+                                                    setModuleData={setFrontValues}
+                                                    settingName={settingName}
+                                                />
+                                            )
+                                        case 'array':
+                                            return (
+                                                <GuildSettingArray
+                                                    key={settingName}
+                                                    moduleName={name}
+                                                    moduleData={frontValues}
+                                                    setModuleData={setFrontValues}
+                                                    settingName={settingName}
+                                                />
+                                            )
+                                    }
+                                })
                         :
                             null
                 }
-            </div>
-
+            </Card>
             {
-                frontValues.enabled === undefined || frontValues.enabled.value === true
+                displaySavedNotification === true
                     ?
-                        Object.entries(frontValues)
-                            .filter(([settingName, settingData]) => settingName !== 'enabled')
-                            .map(([settingName, settingData]) => {
-                                switch (settingData.type) {
-                                    case 'integer':
-                                        return (
-                                            <GuildSettingInteger
-                                                key={settingName}
-                                                moduleName={name}
-                                                moduleData={frontValues}
-                                                setModuleData={setFrontValues}
-                                                settingName={settingName}
-                                            />
-                                        )
-                                    case 'string':
-                                        return (
-                                            <GuildSettingString
-                                                key={settingName}
-                                                moduleName={name}
-                                                moduleData={frontValues}
-                                                setModuleData={setFrontValues}
-                                                settingName={settingName}
-                                            />
-                                        )
-                                    case 'array':
-                                        return (
-                                            <GuildSettingArray
-                                                key={settingName}
-                                                moduleName={name}
-                                                moduleData={frontValues}
-                                                setModuleData={setFrontValues}
-                                                settingName={settingName}
-                                            />
-                                        )
-                                }
-                            })
-                    :
-                        null
+                        <div className={Styles.saved_notification}>
+                            <span>Saved</span>
+                        </div>
+                    : null
             }
-        </Card>
+        </>
     )
 }
