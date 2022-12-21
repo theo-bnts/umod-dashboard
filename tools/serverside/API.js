@@ -37,8 +37,6 @@ class API {
         if (req.headers['x-forwarded-for'] !== undefined)
             ip = req.headers['x-forwarded-for']
 
-        console.log(ip, req.headers)
-
         if (status === 200 && req.body.id !== undefined) {
             const [{ user_ids_count_except_current }] = await Database.Website.runQuery({
                 sql: `
