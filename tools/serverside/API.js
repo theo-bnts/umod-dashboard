@@ -29,10 +29,15 @@ class API {
     static async isValidRequest(req, res, oauth_accepted = false) {
         let status = 200
 
-        const url = new URL('http://example.com' + req.url)
-
         if (req.method !== 'POST')
             status = 405
+
+        let ip = req.connection.remoteAddress
+
+        if (req.headers['x-forwarded-for'] !== undefined)
+            ip = req.headers['x-forwarded-for']
+
+        console.log(ip, req.headers)
 
         if (status === 200 && req.body.id !== undefined) {
             const [{ user_ids_count_except_current }] = await Database.Website.runQuery({
@@ -45,7 +50,7 @@ class API {
                     AND date >= SUBDATE(NOW(), INTERVAL 1 HOUR)
                 `,
                 values: [
-                    req.connection.remoteAddress,
+                    ip,
                     req.body.id || null
                 ]
             })
@@ -53,6 +58,8 @@ class API {
             if (user_ids_count_except_current + 1 > 5)
                 status = 429
         }
+
+        const url = new URL('http://example.com' + req.url)
         
         if (status === 200) {
             const [{ endpoint_requests_count_except_current }] = await Database.Website.runQuery({
@@ -69,7 +76,7 @@ class API {
                 `,
                 values: [
                     url.pathname,
-                    req.connection.remoteAddress,
+                    ip,
                     req.body.id || null
                 ]
             })
@@ -116,7 +123,7 @@ class API {
             `,
             values: [
                 url.pathname,
-                req.connection.remoteAddress,
+                ip,
                 req.body.id || null,
                 status
             ]
