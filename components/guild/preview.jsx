@@ -33,14 +33,12 @@ export default function GuildPreview({ id, icon, name, user_role, bot_in }) {
                     bot_in
                         ?
                             <Link href={'/dashboard/guilds/' + id}>
-                                <a>
-                                    <Button
-                                        appearance='primary'
-                                        icon={<SettingsIcon />}
-                                    >
-                                        Manage
-                                    </Button>
-                                </a>
+                                <Button
+                                    appearance='primary'
+                                    icon={<SettingsIcon />}
+                                >
+                                    Manage
+                                </Button>
                             </Link>
                         :
                             <a href={Discord.getInviteURL(id)}>

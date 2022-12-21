@@ -18,9 +18,7 @@ export default function GuildPicker() {
         <div className={Styles.navbar}>
             <div className={Styles.titles}>
                 <Link href='/'>
-                    <a>
-                        <Button icon={<HomeIcon />}>{width <= 768 ? null : 'Home'}</Button>
-                    </a>
+                    <Button icon={<HomeIcon />}>{width <= 768 ? null : 'Home'}</Button>
                 </Link>
                 <a href={Discord.getInviteURL()}>
                     <Button icon={<BotAddIcon />}>{width <= 768 ? null : 'Add bot'}</Button>

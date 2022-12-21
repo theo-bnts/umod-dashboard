@@ -1,12 +1,22 @@
-import { FluentProvider, webLightTheme, webDarkTheme } from '@fluentui/react-components';
+import {
+  createDOMRenderer,
+  FluentProvider,
+  SSRProvider,
+  RendererProvider,
+  webDarkTheme,
+} from '@fluentui/react-components'
 
 import '/styles/globals.css'
 
-function MyApp({ Component, pageProps }) {
+function MyApp({ Component, pageProps, renderer }) {
   return (
-    <FluentProvider theme={webDarkTheme}>
-      <Component {...pageProps} />
-    </FluentProvider>
+    <RendererProvider renderer={renderer || createDOMRenderer()}>
+      <SSRProvider>
+        <FluentProvider theme={webDarkTheme}>
+          <Component {...pageProps} />
+        </FluentProvider>
+      </SSRProvider>
+    </RendererProvider>
   )
 }
 

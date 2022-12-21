@@ -330,7 +330,7 @@ class Settings {
 
     static zalgo({ zalgo_moderation: zalgo_enabled, zalgo_minimum_length, zalgo_minimum_percent }) {
         return {
-            display: 'Special characters',
+            display: 'Zalgo',
             enabled: SettingsTypes.boolean(zalgo_enabled),
             minimum_length: SettingsTypes.integer('Minimum length', zalgo_minimum_length, 1, 20),
             minimum_percent: SettingsTypes.integer('Minimum percentage', zalgo_minimum_percent, 0, 100)
@@ -400,7 +400,7 @@ class Settings {
 
     static virus({ virus_moderation: virus_enabled, metadefender_api_key: virus_api_key }) {
         return {
-            display: 'Anti-virus',
+            display: 'Virus',
             enabled: SettingsTypes.boolean(virus_enabled),
             api_key: SettingsTypes.string(
                 'API key (Tutorial: https://cutt.ly/kMsE1OC)',

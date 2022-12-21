@@ -10,7 +10,7 @@ class User {
             username: response.username,
             discriminator: response.discriminator,
             icon: 'https://cdn.discordapp.com/avatars/' + response.id + '/' + response.avatar + '.webp',
-            accent_color: '#' + response.accent_color.toString(16)
+            accent_color: response.accent_color !== null ? '#' + response.accent_color.toString(16) : undefined
         }
     }
 
