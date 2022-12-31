@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 
 import { Button, Subtitle1, Subtitle2 } from '@fluentui/react-components'
@@ -17,11 +18,11 @@ export default function GuildPreview({ id, icon, name, user_role, bot_in }) {
     return (
         <Card orientation={width <= 768 ? 'vertical' : 'horizontal'}>
             <CardPreview>
-                <img
+                <Image
                     src={icon + (width <= 768 ? '?size=512' : '?size=128')}
                     alt={name + '\'s icon'}
-                    width='100%'
-                    height='100%'
+                    width={width <= 768 ? 512 : 128}
+                    height={width <= 768 ? 512 : 128}
                 />
             </CardPreview>
             <CardHeader
