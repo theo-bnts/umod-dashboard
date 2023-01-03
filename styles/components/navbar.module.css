@@ -4,8 +4,11 @@
     align-items: center;
 }
 
-.titles {
+.profile_preview {
     margin-right: auto;
+}
+
+.titles {
     display: flex;
     gap: 10px;
 }

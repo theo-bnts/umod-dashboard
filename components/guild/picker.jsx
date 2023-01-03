@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
 
 import { Subtitle1, Spinner } from '@fluentui/react-components'
-import { Card } from '@fluentui/react-components/unstable'
 
 import Guild from '/components/guild/preview'
 import API from '/tools/clientside/API'
 import Page from '/tools/clientside/Page'
+import Styles from '/styles/components/guild/picker.module.css'
 
 export default function GuildPicker() {
     const [loading, setLoading] = useState(true)
@@ -23,7 +23,7 @@ export default function GuildPicker() {
     }, [])
 
     return (
-        <Card>
+        <div className={Styles.picker}>
             {
                 loading === false
                     ?
@@ -34,13 +34,13 @@ export default function GuildPicker() {
                                         <Guild key={guild.id} id={guild.id} icon={guild.icon} name={guild.name} user_role={guild.user.role.display_name} bot_in={guild.bot.in} />
                                     )
                                 :
-                                    <div className='no-guilds'>
+                                    <div className={Styles.no_guilds}>
                                         <Subtitle1>You are not a manager, administrator or owner of any guild</Subtitle1>
                                     </div>
                         )
                     :
                         <Spinner />
             }
-        </Card>
+        </div>
     )
 }

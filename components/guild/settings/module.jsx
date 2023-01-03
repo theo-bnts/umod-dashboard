@@ -7,7 +7,7 @@ import { isEqual, cloneDeep } from 'lodash'
 import GuildSettingInteger from '/components/guild/settings/integer'
 import GuildSettingString from '/components/guild/settings/string'
 import GuildSettingArray from '/components/guild/settings/array'
-import Styles from '/styles/components/guild/settings.module.css'
+import Styles from '/styles/components/guild/settings/index.module.css'
 import API from '/tools/clientside/API'
 import Page from '/tools/clientside/Page'
 

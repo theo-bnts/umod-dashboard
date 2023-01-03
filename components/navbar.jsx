@@ -18,6 +18,9 @@ export default function GuildPicker() {
 
     return (
         <div className={Styles.navbar}>
+            <div className={Styles.profile_preview}>
+                <ProfilePreview />
+            </div>
             <div className={Styles.titles}>
                 {
                     width <= 768
@@ -55,7 +58,6 @@ export default function GuildPicker() {
                             </>
                 }
             </div>
-            <ProfilePreview />
         </div>
     )
 }

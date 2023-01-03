@@ -6,6 +6,7 @@ import { Card } from '@fluentui/react-components/unstable'
 import GuildSettingsModule from '/components/guild/settings/module'
 import API from '/tools/clientside/API'
 import Page from '/tools/clientside/Page'
+import Styles from '/styles/components/guild/settings/index.module.css'
 
 export default function GuildSettings({ guild_id }) {
     const [loading, setLoading] = useState(true)
@@ -27,7 +28,7 @@ export default function GuildSettings({ guild_id }) {
     }, [guild_id])
 
     return (
-        <Card>
+        <div className={Styles.settings}>
             {
                 loading === true
                     ?
@@ -45,6 +46,6 @@ export default function GuildSettings({ guild_id }) {
                                 )
                             })
             }
-        </Card>
+        </div>
     )
 }

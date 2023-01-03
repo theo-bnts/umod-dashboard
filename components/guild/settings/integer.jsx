@@ -1,6 +1,6 @@
 import { Label, Slider } from '@fluentui/react-components'
 
-import Styles from '/styles/components/guild/settings.module.css'
+import Styles from '/styles/components/guild/settings/index.module.css'
 
 export default function GuildSettingInteger({ moduleName, moduleData, setModuleData, settingName }) {
     const settingData = moduleData[settingName]

@@ -1,0 +1,9 @@
+.picker {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.no_guilds {
+    color: var(--colorPaletteRedForeground1);
+}
