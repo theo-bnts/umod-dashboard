@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 
 import { Spinner } from '@fluentui/react-components'
-import { Card } from '@fluentui/react-components/unstable'
 
 import GuildSettingsModule from '/components/guild/settings/module'
 import API from '/tools/clientside/API'

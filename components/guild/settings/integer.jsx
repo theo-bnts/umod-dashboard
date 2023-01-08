@@ -1,13 +1,15 @@
 import { Label, Slider } from '@fluentui/react-components'
+import { cloneDeep } from 'lodash'
 
+import GuildSettingModuleLabel from '/components/guild/settings/label'
 import Styles from '/styles/components/guild/settings/index.module.css'
 
 export default function GuildSettingInteger({ moduleName, moduleData, setModuleData, settingName }) {
-    const settingData = moduleData[settingName]
+    const settingData = cloneDeep(moduleData[settingName])
 
     return (
         <>
-            <Label htmlFor={moduleName + '_' + settingName}>{moduleData[settingName].display}</Label>
+            <GuildSettingModuleLabel moduleName={moduleName} settingName={settingName} settingData={settingData} />
             <Slider
                 id={moduleName + '_' + settingName}
                 value={settingData.value}
@@ -16,7 +18,7 @@ export default function GuildSettingInteger({ moduleName, moduleData, setModuleD
                 onChange={(event, data) => {
                     settingData.value = data.value
 
-                    const copy = { ...moduleData }
+                    const copy = cloneDeep(moduleData)
                     copy[settingName] = settingData
                     setModuleData(copy)
                 }}

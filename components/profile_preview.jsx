@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { useState, useEffect } from 'react'
 
 import { Avatar, Subtitle1, Subtitle2, Spinner } from '@fluentui/react-components'
@@ -5,31 +6,38 @@ import { Card, CardHeader } from '@fluentui/react-components/unstable'
 
 import API from '/tools/clientside/API'
 import Page from '/tools/clientside/Page'
+import Styles from '/styles/components/navbar.module.css'
 
 export default function ProfilePreview() {
     const [loading, setLoading] = useState(true)
+    const [loggedIn, setLoggedIn] = useState(false)
     const [profile, setProfile] = useState([])
 
     useEffect(() => {
         (async () => {
-            const keys = Page.getKeys()
+            const { id, encryption_key } = Page.getKeys(false)
 
-            const data = await API.request('api/user/profile', keys)
+            if (id !== undefined || encryption_key !== undefined) {
+                setLoggedIn(true)
 
-            setProfile(data)
+                const data = await API.request('api/user/profile', { id, encryption_key })
+
+                setProfile(data)
+            }
+
             setLoading(false)
         })()
     }, [])
 
     return (
-        <Card orientation='horizontal'>
-            {
+        loggedIn === true
+            ?
                 loading === false
                     ?
-                        <>
+                        <Card orientation='horizontal'>
                             <Avatar
                                 image={{
-                                    src: profile.icon + '?size=' + 32 * 2,
+                                    src: profile.icon + '?size=' + 32,
                                     alt: profile.username + '\'s avatar'
                                 }}
                                 name={profile.username}
@@ -39,10 +47,16 @@ export default function ProfilePreview() {
                                 header={<Subtitle1>{profile.username}</Subtitle1>}
                                 description={<Subtitle2>{'#' + profile.discriminator}</Subtitle2>}
                             />
-                        </>
+                        </Card>
                     :
                         <Spinner />
-            }
-        </Card>
+            :
+                <Image
+                    src='/icon.webp'
+                    alt='Service icon'
+                    width={64}
+                    height={64}
+                    className={Styles.service_icon}
+                />
     )
 }

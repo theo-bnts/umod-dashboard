@@ -1,0 +1,20 @@
+.label_parent {
+    display: flex;
+    align-items: center;
+    height: var(--lineHeightBase300);
+    gap: 5px;
+}
+
+.help_icon {
+    color: unset;
+}
+
+.help_icon > svg {
+    vertical-align: middle;
+    width: 24px;
+    height: 24px;
+}
+
+.error_label {
+    color: var(--colorPaletteRedForeground1) !important;
+}

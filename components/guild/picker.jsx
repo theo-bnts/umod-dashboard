@@ -13,9 +13,9 @@ export default function GuildPicker() {
 
     useEffect(() => {
         (async () => {
-            const keys = Page.getKeys()
+            const { id, encryption_key } = Page.getKeys()
 
-            const data = await API.request('api/user/guilds', keys)
+            const data = await API.request('api/user/guilds', { id, encryption_key })
 
             setGuilds(data.guilds.filter(guild => guild.user.role.can_manage_guild === true))
             setLoading(false)

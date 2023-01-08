@@ -19,16 +19,17 @@ class SettingsTypes {
         }
     }
 
-    static string(display, value, regex) {
+    static string({ display, helpURL, regex, value }) {
         return {
             type: 'string',
+            display,
             value,
             regex,
-            display
+            help_url: helpURL
         }
     }
 
-    static array(display, value, available, multiselect, regex) {
+    static array({ display, helpURL, regex, value, availableValues, multiselect = false }) {
         function formatArray(array, mode) {
             if (array === null)
                 array = []
@@ -47,11 +48,12 @@ class SettingsTypes {
 
         return {
             type: 'array',
+            display,
+            help_url: helpURL,
             value: formatArray(value, 'selected'),
-            available: formatArray(available, 'available'),
-            multiselect,
             regex,
-            display
+            available: formatArray(availableValues, 'available'),
+            multiselect
         }
     }
 }
@@ -187,7 +189,15 @@ class Settings {
                 .includes(attribute.type)
 
             if (isVariable) {
-                const value = attribute.type === 'array' ? attribute.value.join(',') : attribute.value
+                let value = attribute.value
+                
+                if (attribute.type === 'array') {
+                    if (attribute.value.length > 0) {
+                        value = attribute.value.sort().join(',')
+                    } else {
+                        value = null
+                    }
+                }
 
                 const databaseColumn = Settings.getDatabaseColumnName(type + '_' + attributeKey)
 
@@ -211,13 +221,12 @@ class Settings {
 
         return {
             display: 'Logs',
-            channel_id: SettingsTypes.array(
-                'Channel',
-                logs_channel_id,
-                channels,
-                false,
-                '^[0-9]{18,19}$'
-            )
+            channel_id: SettingsTypes.array({
+                display: 'Channel',
+                regex: '^[0-9]{18,19}$',
+                value: logs_channel_id,
+                availableValues: channels
+            })
         }
     }
 
@@ -226,13 +235,12 @@ class Settings {
 
         return {
             display: 'Moderation team',
-            role_id: SettingsTypes.array(
-                'Moderator role',
-                moderation_role_id,
-                roles,
-                false,
-                '^[0-9]{18,19}$'
-            )
+            role_id: SettingsTypes.array({
+                display: 'Moderator role',
+                regex: '^[0-9]{18,19}$',
+                value: moderation_role_id,
+                availableValues: roles
+            })
         }
     }
 
@@ -365,20 +373,20 @@ class Settings {
         return {
             display: 'Links',
             enabled: SettingsTypes.boolean(link_enabled),
-            authorized_domains: SettingsTypes.array(
-                'Authorized domains',
-                link_authorized_domains,
-                null,
-                true,
-                '(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]'
-            ),
-            blocked_domains: SettingsTypes.array(
-                'Blocked domains',
-                link_blocked_domains,
-                null,
-                true,
-                '(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]'
-            )
+            authorized_domains: SettingsTypes.array({
+                display: 'Authorized domains',
+                regex: '^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$',
+                value: link_authorized_domains,
+                availableValues: null,
+                multiselect: true
+            }),
+            blocked_domains: SettingsTypes.array({
+                display: 'Blocked domains',
+                regex: '^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$',
+                value: link_blocked_domains,
+                availableValues: ['discord.com'],
+                multiselect: true
+            })
         }
     }
 
@@ -386,14 +394,19 @@ class Settings {
         return {
             display: 'Images',
             enabled: SettingsTypes.boolean(image_enabled),
-            api_key: SettingsTypes.string('API key (Tutorial: https://cutt.ly/HMsE48e)', image_api_key, '^[a-f0-9]{32}$'),
-            attributes: SettingsTypes.array(
-                'Attributes',
-                image_attributes,
-                ['explicit', 'gore', 'suggestive'],
-                true,
-                '^(?:explicit|gore|suggestive)$'
-            ),
+            api_key: SettingsTypes.string({
+                display: 'API key',
+                helpURL: 'https://medium.com/p/5c1f9eda72f7',
+                regex:'^[a-f0-9]{32}$',
+                value: image_api_key
+            }),
+            attributes: SettingsTypes.array({
+                display: 'Attributes',
+                regex: '^(?:explicit|gore|suggestive)$',
+                value: image_attributes,
+                availableValues: ['explicit', 'gore', 'suggestive'],
+                multiselect: true
+            }),
             minimum_percent: SettingsTypes.integer('Minimum confidence percentage', image_minimum_percent, 50, 100)
         }
     }
@@ -402,10 +415,12 @@ class Settings {
         return {
             display: 'Virus',
             enabled: SettingsTypes.boolean(virus_enabled),
-            api_key: SettingsTypes.string(
-                'API key (Tutorial: https://cutt.ly/kMsE1OC)',
-                virus_api_key,
-                '^[a-f0-9]{32}$')
+            api_key: SettingsTypes.string({
+                display: 'API key',
+                helpURL: 'https://medium.com/p/c8b81da1874f',
+                regex: '^[a-f0-9]{32}$',
+                value: virus_api_key
+            })
         }
     }
 

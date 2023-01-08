@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { Button, Menu, MenuButton, MenuItem, MenuList, MenuPopover, MenuTrigger,  } from '@fluentui/react-components'
 import { bundleIcon, BotAddRegular, BotAddFilled, HomeRegular, HomeFilled, TextAlignLeftFilled, TextAlignLeftRegular, ToggleMultipleFilled, ToggleMultipleRegular } from '@fluentui/react-icons'
 
-import ProfilePreview from '/components/profile_preview.jsx'
+import ProfilePreview from '/components/profile_preview'
 import Styles from '/styles/components/navbar.module.css'
 import Discord from '/tools/clientside/Discord'
 import Page from '/tools/clientside/Page'

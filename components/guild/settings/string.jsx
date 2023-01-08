@@ -1,18 +1,20 @@
 import { useState } from 'react'
 
 import { Input, Label } from '@fluentui/react-components'
+import { cloneDeep } from 'lodash'
 
-import Styles from '/styles/components/module.module.css'
+import GuildSettingModuleLabel from '/components/guild/settings/label'
+import Styles from '/styles/components/guild/settings/module.module.css'
 
 export default function GuildSettingString({ moduleName, moduleData, setModuleData, settingName }) {
-    const settingData = moduleData[settingName]
+    const settingData = cloneDeep(moduleData[settingName])
 
     const [value, setValue] = useState(settingData.value)
     const [match, setMatch] = useState(true)
 
     return (
         <>
-            <Label htmlFor={moduleName + '_' + settingName}>{settingData.display}</Label>
+            <GuildSettingModuleLabel moduleName={moduleName} settingName={settingName} settingData={settingData} />
             <Input
                 id={moduleName + '_' + settingName}
                 value={value}
@@ -26,7 +28,7 @@ export default function GuildSettingString({ moduleName, moduleData, setModuleDa
                     } else {
                         setMatch(true)
 
-                        const copy = { ...moduleData }
+                        const copy = cloneDeep(moduleData)
                         copy[settingName] = settingData
                         setModuleData(copy)
                     }

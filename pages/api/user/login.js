@@ -2,7 +2,6 @@ import API from '/tools/serverside/API'
 import User from '/tools/serverside/User'
 
 export default async function handler(req, res) {
-
     if (!await API.isValidRequest(req, res, true))
         return
 
@@ -21,5 +20,4 @@ export default async function handler(req, res) {
     }
 
     API.returnSuccess(res, { id, encryption_key })
-
 }

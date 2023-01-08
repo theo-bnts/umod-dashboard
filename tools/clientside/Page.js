@@ -4,11 +4,11 @@ import { useState, useEffect } from 'react'
 import Cookies from 'js-cookie'
 
 class Page {
-    static getKeys() {
+    static getKeys(required = true) {
         const id = Cookies.get('id')
         const encryption_key = Cookies.get('encryption_key')
 
-        if (typeof id !== 'string' || id.length === 0 || typeof encryption_key !== 'string' || encryption_key.length === 0) {
+        if (required === true && typeof id !== 'string' || id.length === 0 || typeof encryption_key !== 'string' || encryption_key.length === 0) {
             Router.push('/errors/' + 401)
             throw 401
         }
@@ -20,13 +20,8 @@ class Page {
     }
 
     static setKeys(id, encryption_key) {
-        if (typeof id !== 'string' || id.length === 0 || typeof encryption_key !== 'string' || encryption_key.length === 0) {
-            Router.push('/errors/' + 401)
-            throw 401
-        }
-
-        Cookies.set('id', id)
-        Cookies.set('encryption_key', encryption_key)
+        Cookies.set('id', id, { secure: true, sameSite: 'strict', expires: process.env.COOKIES_EXPIRATION_DAYS })
+        Cookies.set('encryption_key', encryption_key, { secure: true, sameSite: 'strict', expires: process.env.COOKIES_EXPIRATION_DAYS })
     }
 
     static useWindowDimensions() {

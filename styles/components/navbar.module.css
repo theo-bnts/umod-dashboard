@@ -4,6 +4,10 @@
     align-items: center;
 }
 
+.service_icon {
+    border-radius: 50%;
+}
+
 .profile_preview {
     margin-right: auto;
 }

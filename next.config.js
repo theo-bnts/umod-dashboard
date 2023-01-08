@@ -10,6 +10,10 @@ const nextConfig = {
   },
 
   env: {
+    BASE_URL: process.env.BASE_URL,
+    COOKIES_EXPIRATION_DAYS: process.env.COOKIES_EXPIRATION_DAYS,
+    GA_MEASUREMENT_ID: process.env.GA_MEASUREMENT_ID,
+
     DISCORD_API_BASE_URL: process.env.DISCORD_API_BASE_URL,
     DISCORD_CLIENT_ID: process.env.DISCORD_CLIENT_ID,
     DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET,

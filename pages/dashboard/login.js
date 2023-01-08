@@ -8,7 +8,6 @@ import Discord from '/tools/clientside/Discord'
 import Page from '/tools/clientside/Page'
 
 export default function Login() {
-
     const router = useRouter()
     
     useEffect(() => {
@@ -16,13 +15,14 @@ export default function Login() {
             const { code } = router.query
 
             if (typeof code === 'string' && code.length > 0) {
-                const data = await API.request('api/user/login', { oauth_code: code })
+                const { id, encryption_key } = await API.request('api/user/login', { oauth_code: code })
 
-                Page.setKeys(data.id, data.encryption_key)
+                Page.setKeys(id, encryption_key)
 
-                router.push('./guilds')
-            } else
+                router.push('/dashboard/guilds')
+            } else {
                 router.push(Discord.getOAuthURL())
+            }
         })()
     }, [router])
 
@@ -31,7 +31,6 @@ export default function Login() {
             <Spinner />
         </main>
     )
-
 }
 
 export function getServerSideProps({ query }) {

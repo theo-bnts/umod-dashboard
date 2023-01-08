@@ -24,6 +24,7 @@ export default function GuildSettingsModule({ guildId, moduleName, defaultValues
         
         precedentTimeoutId.current = setTimeout(async () => {
             if (!isEqual(frontValues, backValues)) {
+                console.debug(frontValues, backValues)
                 const { id, encryption_key } = Page.getKeys()
 
                 await API.request('api/guild/settings/update', {
@@ -55,7 +56,7 @@ export default function GuildSettingsModule({ guildId, moduleName, defaultValues
                                 <Switch
                                     checked={frontValues.enabled.value}
                                     onChange={(event, data) => {
-                                        const copy = { ...frontValues }
+                                        const copy = cloneDeep(frontValues)
                                         copy.enabled.value = data.checked
                                         setFrontValues(copy)
                                     }}
@@ -76,7 +77,7 @@ export default function GuildSettingsModule({ guildId, moduleName, defaultValues
                                             return (
                                                 <GuildSettingInteger
                                                     key={settingName}
-                                                    moduleName={name}
+                                                    moduleName={moduleName}
                                                     moduleData={frontValues}
                                                     setModuleData={setFrontValues}
                                                     settingName={settingName}
@@ -86,7 +87,7 @@ export default function GuildSettingsModule({ guildId, moduleName, defaultValues
                                             return (
                                                 <GuildSettingString
                                                     key={settingName}
-                                                    moduleName={name}
+                                                    moduleName={moduleName}
                                                     moduleData={frontValues}
                                                     setModuleData={setFrontValues}
                                                     settingName={settingName}
@@ -96,7 +97,7 @@ export default function GuildSettingsModule({ guildId, moduleName, defaultValues
                                             return (
                                                 <GuildSettingArray
                                                     key={settingName}
-                                                    moduleName={name}
+                                                    moduleName={moduleName}
                                                     moduleData={frontValues}
                                                     setModuleData={setFrontValues}
                                                     settingName={settingName}
