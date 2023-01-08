@@ -1,3 +1,4 @@
+import ExtendedURL from '/tools/clientside/ExtendedURL'
 import DiscordAPI from '/tools/serverside/Discord/API'
 import DiscordBot from '/tools/serverside/Discord/Bot'
 import DiscordPermissions from '/tools/serverside/Discord/Permissions'
@@ -22,17 +23,29 @@ class User {
         }
 
         return guilds
-            .map(guild => ({
+            .map(guild => {
+                if (guild.icon !== null) {
+                    guild.icon = 'https://cdn.discordapp.com/icons/' + guild.id + '/' + guild.icon + '.webp'
+                } else {
+                    guild.icon = ExtendedURL.setParameters('https://ui-avatars.com/api/', {
+                        background: '36393f',
+                        color: 'fff',
+                        name: guild.name
+                    })
+                }
+                
+                return {
                     id: guild.id,
                     name: guild.name,
-                    icon: guild.icon !== null ? 'https://cdn.discordapp.com/icons/' + guild.id + '/' + guild.icon + '.webp' : null,
+                    icon: guild.icon,
                     user: {
                         role: DiscordPermissions.getTitle(guild.permissions, guild.owner)
                     },
                     bot: {
                         in: guild.bot_in
                     }
-            }))
+                }
+            })
             .sort((a, b) => b.bot.in - a.bot.in || b.id - a.id)
     }
 

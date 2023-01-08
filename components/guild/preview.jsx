@@ -7,6 +7,7 @@ import { bundleIcon, BotAddFilled, BotAddRegular, SettingsRegular, SettingsFille
 
 import Styles from '/styles/components/guild/preview.module.css'
 import Discord from '/tools/clientside/Discord'
+import ExtendedURL from '/tools/clientside/ExtendedURL'
 import Page from '/tools/clientside/Page'
 
 export default function GuildPreview({ id, icon, name, user_role, bot_in }) {
@@ -15,15 +16,11 @@ export default function GuildPreview({ id, icon, name, user_role, bot_in }) {
     const BotAddIcon = bundleIcon(BotAddFilled, BotAddRegular)
     const SettingsIcon = bundleIcon(SettingsFilled, SettingsRegular)
 
-    icon = icon !== null
-        ? icon + '?size=' + (width <= 768 ? 512 : 128)
-        : 'https://ui-avatars.com/api/?background=36393f&color=fff&size=' + (width <= 768 ? 512 : 128) + '&name=' + encodeURI(name)
-    
     return (
         <Card orientation={width <= 768 ? 'vertical' : 'horizontal'}>
             <CardPreview>
                 <Image
-                    src={icon}
+                    src={ExtendedURL.setParameters(icon, { size: width <= 768 ? 512 : 128 })}
                     alt={name + '\'s icon'}
                     width={width <= 768 ? 512 : 128}
                     height={width <= 768 ? 512 : 128}

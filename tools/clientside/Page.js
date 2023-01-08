@@ -20,8 +20,8 @@ class Page {
     }
 
     static setKeys(id, encryption_key) {
-        Cookies.set('id', id, { secure: true, sameSite: 'strict', expires: process.env.COOKIES_EXPIRATION_DAYS })
-        Cookies.set('encryption_key', encryption_key, { secure: true, sameSite: 'strict', expires: process.env.COOKIES_EXPIRATION_DAYS })
+        Cookies.set('id', id, { secure: true, sameSite: 'strict', expires: parseInt(process.env.COOKIES_EXPIRATION_DAYS) })
+        Cookies.set('encryption_key', encryption_key, { secure: true, sameSite: 'strict', expires: parseInt(process.env.COOKIES_EXPIRATION_DAYS) })
     }
 
     static useWindowDimensions() {
