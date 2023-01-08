@@ -24,7 +24,6 @@ export default function GuildSettingsModule({ guildId, moduleName, defaultValues
         
         precedentTimeoutId.current = setTimeout(async () => {
             if (!isEqual(frontValues, backValues)) {
-                console.debug(frontValues, backValues)
                 const { id, encryption_key } = Page.getKeys()
 
                 await API.request('api/guild/settings/update', {

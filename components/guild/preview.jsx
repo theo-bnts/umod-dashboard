@@ -14,12 +14,16 @@ export default function GuildPreview({ id, icon, name, user_role, bot_in }) {
 
     const BotAddIcon = bundleIcon(BotAddFilled, BotAddRegular)
     const SettingsIcon = bundleIcon(SettingsFilled, SettingsRegular)
+
+    icon = icon !== null
+        ? icon + '?size=' + (width <= 768 ? 512 : 128)
+        : 'https://ui-avatars.com/api/?background=36393f&color=fff&size=' + (width <= 768 ? 512 : 128) + '&name=' + encodeURI(name)
     
     return (
         <Card orientation={width <= 768 ? 'vertical' : 'horizontal'}>
             <CardPreview>
                 <Image
-                    src={icon + (width <= 768 ? '?size=512' : '?size=128')}
+                    src={icon}
                     alt={name + '\'s icon'}
                     width={width <= 768 ? 512 : 128}
                     height={width <= 768 ? 512 : 128}

@@ -6,7 +6,10 @@ const nextConfig = {
   swcMinify: true,
 
   images: {
-    domains: ['cdn.discordapp.com'],
+    domains: [
+      'cdn.discordapp.com',
+      'ui-avatars.com'
+    ],
   },
 
   env: {

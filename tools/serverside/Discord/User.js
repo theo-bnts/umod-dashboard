@@ -25,7 +25,7 @@ class User {
             .map(guild => ({
                     id: guild.id,
                     name: guild.name,
-                    icon: 'https://cdn.discordapp.com/icons/' + guild.id + '/' + guild.icon + '.webp',
+                    icon: guild.icon !== null ? 'https://cdn.discordapp.com/icons/' + guild.id + '/' + guild.icon + '.webp' : null,
                     user: {
                         role: DiscordPermissions.getTitle(guild.permissions, guild.owner)
                     },
